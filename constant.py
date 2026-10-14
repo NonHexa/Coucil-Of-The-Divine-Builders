@@ -1,0 +1,13 @@
+
+SCREEN_WIDTH = 1280
+SCREEN_HEIGHT = 720
+
+SCREEN_TITLE = "Divenie somethoing"
+
+BACKGROUND_PATH = "assets/images/menu_background.png"
+
+# Gothic colour palette
+BACKGROUND_COLOUR = (12, 15, 22)
+TEXT_COLOUR = (225, 218, 199)
+HIGHLIGHT_COLOUR = (150, 35, 35)
+BUTTON_COLOUR = (25, 27, 33)
