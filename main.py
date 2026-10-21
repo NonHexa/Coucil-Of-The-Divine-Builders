@@ -1,6 +1,5 @@
 
 import arcade
-import constant
 
 from constant import (
     SCREEN_WIDTH,
@@ -26,10 +25,10 @@ class MainMenuView(arcade.View):
             print("Background image not found. Using a plain background.")
 
         self.buttons = [
-            ("PLAY / NEW GAME", 400),
-            ("SETTINGS", 320),
-            ("CREDITS", 240),
-            ("QUIT", 160),
+            ("Play", 400),
+            ("Settings", 320),
+            ("Gallery", 240),
+            ("I Suck (Q^(u)it)", 160),
         ]
 
         self.mouse_x = -1
@@ -38,7 +37,6 @@ class MainMenuView(arcade.View):
     def on_draw(self):
         self.clear(BACKGROUND_COLOUR)
 
-        # Draw the background image
         if self.background:
             arcade.draw_texture_rect(
                 self.background,
@@ -50,13 +48,12 @@ class MainMenuView(arcade.View):
                 ),
             )
 
-        # Dark panel behind the menu
+
         arcade.draw_rect_filled(
             arcade.XYWH(320, 360, 440, 610),
             (0, 0, 0, 190),
         )
 
-        # Game title
         arcade.draw_text(
             "Not Ready Yet",
             320,
@@ -78,7 +75,6 @@ class MainMenuView(arcade.View):
             font_name="serif",
         )
 
-        # Draw each menu button
         for label, y in self.buttons:
             hovered = (
                 100 <= self.mouse_x <= 540
@@ -93,7 +89,7 @@ class MainMenuView(arcade.View):
             )
 
             arcade.draw_rect_outline(
-                arcade.XYWH(320, y, 440, 52),
+                arcade.XYWH(320, y, 440, 20),
                 TEXT_COLOUR,
                 border_width=1,
             )
@@ -102,6 +98,25 @@ class MainMenuView(arcade.View):
                 label,
                 320,
                 y,
+                TEXT_COLOUR,
+                18,
+                anchor_x="center",
+                anchor_y="center",
+                font_name="serif",
+            )
+            arcade.draw_rect_filled(
+                arcade.XYWH(320, 200, 440, 52),
+                colour,
+            )
+            arcade.draw_rect_outline(
+                arcade.XYWH(320, 200, 440, 52),
+                TEXT_COLOUR,
+                border_width=1,
+            )
+            arcade.draw_text(
+                "Multi",
+                320,
+                200,
                 TEXT_COLOUR,
                 18,
                 anchor_x="center",
@@ -135,13 +150,13 @@ class MainMenuView(arcade.View):
             if not inside:
                 continue
 
-            if label == "Play":
+            if label == "PLAY":
                 print("Starting a new game...")
 
-            elif label == "Settings":
+            elif label == "SETTINGS":
                 print("Settings selected.")
 
-            elif label == "Cretits":
+            elif label == "GALLERY":
                 print("Credits selected.")
 
             elif label == "QUIT":
