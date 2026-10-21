@@ -89,7 +89,7 @@ class MainMenuView(arcade.View):
             )
 
             arcade.draw_rect_outline(
-                arcade.XYWH(320, y, 440, 20),
+                arcade.XYWH(320, y, 440, 52),
                 TEXT_COLOUR,
                 border_width=1,
             )
@@ -105,11 +105,11 @@ class MainMenuView(arcade.View):
                 font_name="serif",
             )
             arcade.draw_rect_filled(
-                arcade.XYWH(320, 200, 440, 52),
+                arcade.XYWH(320, 200, 440, 20),
                 colour,
             )
             arcade.draw_rect_outline(
-                arcade.XYWH(320, 200, 440, 52),
+                arcade.XYWH(320, 200, 440, 20),
                 TEXT_COLOUR,
                 border_width=1,
             )
