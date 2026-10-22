@@ -1,4 +1,3 @@
-
 import arcade
 
 from constant import (
