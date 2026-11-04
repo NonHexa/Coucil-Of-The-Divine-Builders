@@ -1,5 +1,12 @@
 you find shards of the elder god and absorb them into your being(you can share with freinds)
-abilities:
+abilities(the sleeping one):
 short range telaportation
 eldritch blast
 temporary objective point to next floor
+have a deck of tarot cards with different abilities(weavers of fate):
+draw a set of cards from your stack to use the abilities on
+the card can be used as an attack or buff when rightside
+inverted buffs become curses and attacks become defences
+you can use a card on you or the enemy/friend
+can sacrifice lesser cards to main for upgrade
+can pullup draw on screen to cast 
