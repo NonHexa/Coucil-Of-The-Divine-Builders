@@ -7,7 +7,7 @@ try:
 except ImportError:
     SCREEN_WIDTH, SCREEN_HEIGHT = 800, 600
 
-SPEED = 500
+SPEED = 50
 SCREEN_TITLE = "Circle of Squares in Python Arcade"
 
 
@@ -41,8 +41,8 @@ class CircleOfSquaresView(arcade.Window):
         
         self.grid_shape_list = arcade.shape_list.ShapeElementList()
         
-        square_size = 1000
-        circle_radius = square_size * 150
+        square_size = 10
+        circle_radius = square_size * 50
         center_x = 400
         center_y = 300
         grid_radius = int(circle_radius / square_size)
