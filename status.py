@@ -23,20 +23,20 @@ statuslist = [[0.8, 1, 1, 1, 1, 1, 0.8],
 status_exclusivities = [[2],[],[0,6],[],[8],[15],[2],[],[4],[13],[],[14],[12],[],[11],[],[],[],[19],[18],[12]]
 # exapmles of thingies that might be used, pay attention to length of the lists
 #N_effect = 2
-#C_effects = [True, False, False, False,False, False, False, False, False, False,False,False,False,False,False,False,False,False,False,False,False,False,]
+#C_effects = [True,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,]
 #stats= [1,1,1,1,1,1,1]
 def status_change(stats, C_effects, N_effect):
     for i in status_exclusivities[N_effect]:
-        if C_effects[i] == True:
+        if C_effects[i] == True:  # sees if  they have a contradicting effect
             wascancelled = True
             C_effects[i]=False
             for k in range(0,len(stats)):
-                    stats[k]= stats[k]/statuslist[i][k]
+                    stats[k]= stats[k]/statuslist[i][k] #remove contradicting effects
     if wascancelled == True:
         return stats, C_effects
     for i in range(0,len(stats)):
         stats[i]= stats[i]*statuslist[N_effect][i]
     C_effects[0] = True
-    return stats, C_effects
+    return stats, C_effects # does shit
 
 
