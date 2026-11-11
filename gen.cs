@@ -5,25 +5,11 @@ using Raylib_cs;
 
 namespace CircleOfSquares
 {
-    class RectangleOutline
-    {
-        public Rectangle Rect;
-        public Color Color;
-        public int BorderWidth;
-
-        public RectangleOutline(Rectangle rect, Color color, int borderWidth)
-        {
-            Rect = rect;
-            Color = color;
-            BorderWidth = borderWidth;
-        }
-    }
-
     class Program
     {
         const int ScreenWidth = 800;
         const int ScreenHeight = 600;
-        const float Speed = 5f; // Pixels per second
+        const float Speed = 500f; // Pixels per second
 
         static void Main(string[] args)
         {
@@ -45,52 +31,33 @@ namespace CircleOfSquares
                 Zoom = 1.0f
             };
 
-            // Generate grid shapes (equivalent to Arcade's ShapeElementList)
-            List<RectangleOutline> gridShapes = new List<RectangleOutline>();
-            
             int smallerGrid = 40;
             int squareSize = 1000;
             float circleRadius = squareSize * 50f;
             float centerX = 400f;
             float centerY = 300f;
-            
-            int gridRadiusSmall = (int)(circleRadius / smaller_grid(smallerGrid, squareSize, circleRadius)); // Adjusted for performance bounds
-            // Using safer bounds for demonstration to avoid excessive memory overhead if radii are massive:
-            int safeSmallRadius = 50; 
-            int safeLargeRadius = 10;
+            int gridRadius = (int)Math.Ceiling(circleRadius / squareSize);
+            int smallSquaresPerSide = squareSize / smallerGrid;
+            List<Rectangle> blueSquares = new List<Rectangle>();
 
-            // Generate smaller grid outlines (Orange)
-            for (int column = -safeSmallRadius; column <= safeSmallRadius; column++)
+            for (int column = -gridRadius; column <= gridRadius; column++)
             {
-                for (int row = -safeSmallRadius; row <= safeSmallRadius; row++)
-                {
-                    float offsetX = column * smallerGrid;
-                    float offsetY = row * smallerGrid;
-                    
-                    if (offsetX * offsetX + offsetY * offsetY > (circleRadius * smallerGrid) * (circleRadius * smallerGrid))
-                        continue;
-
-                    Rectangle rect = new Rectangle(centerX + offsetX - squareSize / 2f, centerY + offsetY - squareSize / 2f, squareSize, squareSize);
-                    gridShapes.Add(new RectangleOutline(rect, Color.Orange, 2));
-                }
-            }
-
-            // Generate main grid outlines (Blue)
-            int gridRadius = (int)(circleRadius / square_size_divisor(squareSize, circleRadius));
-            for (int column = -safeLargeRadius; column <= safeLargeRadius; column++)
-            {
-                for (int row = -safeLargeRadius; row <= safeLargeRadius; row++)
+                for (int row = -gridRadius; row <= gridRadius; row++)
                 {
                     float offsetX = column * squareSize;
                     float offsetY = row * squareSize;
-                    
-                    if (offsetX * offsetX + offsetY * offsetY > circleRadius * circleRadius)
+                    float farthestCornerX = Math.Abs(offsetX) + squareSize / 2f;
+                    float farthestCornerY = Math.Abs(offsetY) + squareSize / 2f;
+
+                    if (farthestCornerX * farthestCornerX + farthestCornerY * farthestCornerY > circleRadius * circleRadius)
                         continue;
 
                     Rectangle rect = new Rectangle(centerX + offsetX - squareSize / 2f, centerY + offsetY - squareSize / 2f, squareSize, squareSize);
-                    gridShapes.Add(new RectangleOutline(rect, Color.Blue, 2));
+                    blueSquares.Add(rect);
                 }
             }
+
+            int borderThickness = 12;
 
             // Main Game Loop
             while (!Raylib.WindowShouldClose())
@@ -98,10 +65,20 @@ namespace CircleOfSquares
                 float deltaTime = Raylib.GetFrameTime();
 
                 // 1. Handle Input & Movement
-                if (Raylib.IsKeyDown(KeyboardKey.Right)) playerPos.X += Speed * deltaTime * 5;
-                if (Raylib.IsKeyDown(KeyboardKey.Left)) playerPos.X -= Speed * deltaTime * 5;
-                if (Raylib.IsKeyDown(KeyboardKey.Up)) playerPos.Y -= Speed * deltaTime * 5;
-                if (Raylib.IsKeyDown(KeyboardKey.Down)) playerPos.Y += Speed * deltaTime * 5;
+                Vector2 nextPlayerPos = playerPos;
+                if (Raylib.IsKeyDown(KeyboardKey.Right)) nextPlayerPos.X += Speed * deltaTime * 5;
+                if (Raylib.IsKeyDown(KeyboardKey.Left)) nextPlayerPos.X -= Speed * deltaTime * 5;
+                if (Raylib.IsKeyDown(KeyboardKey.Up)) nextPlayerPos.Y -= Speed * deltaTime * 5;
+                if (Raylib.IsKeyDown(KeyboardKey.Down)) nextPlayerPos.Y += Speed * deltaTime * 5;
+
+                Vector2 fromCenter = nextPlayerPos - new Vector2(centerX, centerY);
+                float distanceFromCenter = fromCenter.Length();
+                float maxPlayerDistance = circleRadius - playerRadius;
+                if (distanceFromCenter > maxPlayerDistance)
+                {
+                    nextPlayerPos = new Vector2(centerX, centerY) + fromCenter / distanceFromCenter * maxPlayerDistance;
+                }
+                playerPos = nextPlayerPos;
 
                 // 2. Update Camera (Lerp towards player)
                 camera.Target.X += (playerPos.X - camera.Target.X) * 0.1f;
@@ -114,10 +91,39 @@ namespace CircleOfSquares
                 // Start 2D Camera Mode
                 Raylib.BeginMode2D(camera);
 
-                // Draw batched grid shapes
-                foreach (var shape in gridShapes)
+                // Draw the small-square grid inside each blue square visible to the camera.
+                float viewLeft = camera.Target.X - camera.Offset.X / camera.Zoom;
+                float viewRight = camera.Target.X + camera.Offset.X / camera.Zoom;
+                float viewTop = camera.Target.Y - camera.Offset.Y / camera.Zoom;
+                float viewBottom = camera.Target.Y + camera.Offset.Y / camera.Zoom;
+
+                foreach (Rectangle square in blueSquares)
                 {
-                    Raylib.DrawRectangleLines((int)shape.Rect.X, (int)shape.Rect.Y, (int)shape.Rect.Width, (int)shape.Rect.Height, shape.Color);
+                    if (square.X + square.Width < viewLeft || square.X > viewRight ||
+                        square.Y + square.Height < viewTop || square.Y > viewBottom)
+                        continue;
+
+                    for (int division = 1; division < smallSquaresPerSide; division++)
+                    {
+                        int x = (int)(square.X + division * smallerGrid);
+                        int y = (int)(square.Y + division * smallerGrid);
+                        Raylib.DrawLine(x, (int)square.Y, x, (int)(square.Y + square.Height), Color.Orange);
+                        Raylib.DrawLine((int)square.X, y, (int)(square.X + square.Width), y, Color.Orange);
+                    }
+                }
+
+                foreach (Rectangle square in blueSquares)
+                {
+                    if (square.X + square.Width < viewLeft || square.X > viewRight ||
+                        square.Y + square.Height < viewTop || square.Y > viewBottom)
+                        continue;
+
+                    Raylib.DrawRectangleLines((int)square.X, (int)square.Y, (int)square.Width, (int)square.Height, Color.Blue);
+                }
+
+                for (int border = 0; border < borderThickness; border++)
+                {
+                    Raylib.DrawCircleLines((int)centerX, (int)centerY, (int)circleRadius - borderThickness / 2 + border, Color.Blue);
                 }
 
                 // Draw player
@@ -134,8 +140,5 @@ namespace CircleOfSquares
 
             Raylib.CloseWindow();
         }
-
-        static float smaller_grid(int smallerGrid, int squareSize, float circleRadius) => smallerGrid;
-        static float square_size_divisor(int squareSize, float circleRadius) => squareSize;
     }
 }
