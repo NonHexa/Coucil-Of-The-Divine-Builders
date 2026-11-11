@@ -1,11 +1,8 @@
 import arcade
 import math
 
-# Assuming constant.py contains SCREEN_WIDTH and SCREEN_HEIGHT
-try:
-    from constant import SCREEN_WIDTH, SCREEN_HEIGHT
-except ImportError:
-    SCREEN_WIDTH, SCREEN_HEIGHT = 800, 600
+
+from constant import SCREEN_WIDTH, SCREEN_HEIGHT
 
 SPEED = 50
 SCREEN_TITLE = "Circle of Squares in Python Arcade"
@@ -41,7 +38,7 @@ class CircleOfSquaresView(arcade.Window):
         
         self.grid_shape_list = arcade.shape_list.ShapeElementList()
         
-        square_size = 10
+        square_size = 1000
         circle_radius = square_size * 50
         center_x = 400
         center_y = 300
@@ -54,7 +51,6 @@ class CircleOfSquaresView(arcade.Window):
                 if offset_x**2 + offset_y**2 > circle_radius**2:
                     continue
 
-                # FIX 2: Access create_rectangle_outline through the shape_list module
                 rect_shape = arcade.shape_list.create_rectangle_outline(
                     center_x=center_x + offset_x,
                     center_y=center_y + offset_y,
@@ -81,13 +77,10 @@ class CircleOfSquaresView(arcade.Window):
     def on_draw(self):
         self.clear()
         
-        # Activate the camera for scrolling
         self.camera.use()
 
-        # OPTIMISATION: Instantly render all thousands of squares at once from GPU memory!
         self.grid_shape_list.draw()
 
-        # Render player
         self.player_list.draw()
 
     def on_key_press(self, key, modifiers):
