@@ -4,7 +4,7 @@ import math
 
 from constant import SCREEN_WIDTH, SCREEN_HEIGHT
 
-SPEED = 50
+SPEED = 5
 SCREEN_TITLE = "Circle of Squares in Python Arcade"
 
 
@@ -16,7 +16,7 @@ class CircleOfSquaresView(arcade.Window):
         self.camera = None
         
         # Simple player setup
-        self.player = arcade.SpriteCircle(radius=15, color=arcade.color.BLUE)
+        self.player = arcade.SpriteCircle(radius=15, color=arcade.color.LA_SALLE_GREEN)
         self.player.center_x = 400
         self.player.center_y = 300
         
@@ -37,20 +37,35 @@ class CircleOfSquaresView(arcade.Window):
         self.camera = arcade.Camera2D()
         
         self.grid_shape_list = arcade.shape_list.ShapeElementList()
-        
+        smaller_grid = 40       
         square_size = 1000
         circle_radius = square_size * 50
         center_x = 400
         center_y = 300
         grid_radius = int(circle_radius / square_size)
+        grid_radius_small = int(circle_radius / square_size)
+        for column in range(-grid_radius_small, grid_radius_small + 1):
+            for row in range(-grid_radius_small, grid_radius_small + 1):
+                offset_x = column * smaller_grid
+                offset_y = row * smaller_grid
+                if offset_x**2 + offset_y**2 > (circle_radius*smaller_grid)**2:
+                    continue
 
+                rect_shape = arcade.shape_list.create_rectangle_outline(
+                    center_x=center_x + offset_x,
+                    center_y=center_y + offset_y,
+                    width=square_size,
+                    height=square_size,
+                    color=arcade.color.ORANGE,
+                    border_width=2
+                )
+                self.grid_shape_list.append(rect_shape)
         for column in range(-grid_radius, grid_radius + 1):
             for row in range(-grid_radius, grid_radius + 1):
                 offset_x = column * square_size
                 offset_y = row * square_size
                 if offset_x**2 + offset_y**2 > circle_radius**2:
                     continue
-
                 rect_shape = arcade.shape_list.create_rectangle_outline(
                     center_x=center_x + offset_x,
                     center_y=center_y + offset_y,
