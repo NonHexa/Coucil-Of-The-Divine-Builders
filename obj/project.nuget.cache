@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "UtjWu95vLqU=",
+  "dgSpecHash": "iaSJa22xP3s=",
   "success": true,
-  "projectFilePath": "C:\\Users\\ethan\\GitHub Stuff\\Rouge\\Coucil-Of-The-Divine-Builders\\gen.csproj",
+  "projectFilePath": "C:\\Users\\ethan\\GitHub Stuff\\Rouge\\Coucil-Of-The-Divine-Builders\\DivineBuilders.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\ethan\\.nuget\\packages\\raylib-cs\\6.1.1\\raylib-cs.6.1.1.nupkg.sha512",
     "C:\\Users\\ethan\\.nuget\\packages\\system.numerics.vectors\\4.5.0\\system.numerics.vectors.4.5.0.nupkg.sha512"

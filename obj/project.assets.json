@@ -131,11 +131,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\ethan\\GitHub Stuff\\Rouge\\Coucil-Of-The-Divine-Builders\\gen.csproj",
-      "projectName": "gen",
-      "projectPath": "C:\\Users\\ethan\\GitHub Stuff\\Rouge\\Coucil-Of-The-Divine-Builders\\gen.csproj",
+      "projectUniqueName": "c:\\Users\\ethan\\GitHub Stuff\\Rouge\\Coucil-Of-The-Divine-Builders\\DivineBuilders.csproj",
+      "projectName": "DivineBuilders",
+      "projectPath": "c:\\Users\\ethan\\GitHub Stuff\\Rouge\\Coucil-Of-The-Divine-Builders\\DivineBuilders.csproj",
       "packagesPath": "C:\\Users\\ethan\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\ethan\\GitHub Stuff\\Rouge\\Coucil-Of-The-Divine-Builders\\obj\\",
+      "outputPath": "c:\\Users\\ethan\\GitHub Stuff\\Rouge\\Coucil-Of-The-Divine-Builders\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\ethan\\AppData\\Roaming\\NuGet\\NuGet.Config",
