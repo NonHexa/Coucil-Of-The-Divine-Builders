@@ -13,3 +13,4 @@ grid base like laberinth (the boardgame) for generation
 if you jump into the beam at the top you will be shot down by an orbital machine gun
 Floor 10 will be the seagails boss 
 Floor 20 will be Dunce :>
+Floor 50 will be humucli boss
