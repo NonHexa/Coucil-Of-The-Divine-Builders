@@ -1,27 +1,54 @@
 using System.Numerics;
 using DivineBuilders.Configuration;
+using DivineBuilders.Gameplay.StatusEffects;
 using Raylib_cs;
 
 namespace DivineBuilders.World;
 
 public sealed class CircleOfSquaresView
 {
-    private const float Speed = 500f;
-    private const int SmallGridSize = 40;
-    private const int SquareSize = 1000;
+    private const float Speed = 5000f;
+    private const int SmallGridSize = GameConstants.FloorGridCellSize;
+    private const int SquareSize = GameConstants.FloorSize;
     private const int BorderThickness = 12;
 
-    private readonly float circleRadius = SquareSize * 50f;
+    private readonly int gridRadius;
+    public int FloorNumber { get; }
     private readonly float centerX = 400f;
     private readonly float centerY = 300f;
     private readonly int smallSquaresPerSide = SquareSize / SmallGridSize;
     private readonly List<Rectangle> blueSquares = new();
     private Vector2 playerPosition = new(400, 300);
     private readonly float playerRadius = 15f;
+    private readonly double[] playerStats = Enumerable.Repeat(100d, StatusEffectSystem.StatCount).ToArray();
+    private readonly bool[] activeEffects = new bool[StatusEffectSystem.EffectCount];
+    private readonly Rectangle downDoor;
     private Camera2D camera;
 
-    public CircleOfSquaresView()
+    public IReadOnlyList<double> PlayerStats => playerStats;
+    public IReadOnlyList<bool> ActiveEffects => activeEffects;
+
+    public void ApplyEffect(int effectIndex) => StatusEffectSystem.Apply(effectIndex, playerStats, activeEffects);
+
+    public CircleOfSquaresView(int floorNumber = 0, GameConstants.Difficulty difficulty = GameConstants.Difficulty.Easy)
     {
+        FloorNumber = floorNumber;
+        gridRadius = GameConstants.GetFloorRadius(floorNumber, difficulty);
+        int cellsPerFloorSide = SquareSize / SmallGridSize;
+        int doorColumn;
+        int doorRow;
+        do
+        {
+            doorColumn = Random.Shared.Next(cellsPerFloorSide);
+            doorRow = Random.Shared.Next(cellsPerFloorSide);
+        } while (doorColumn == cellsPerFloorSide / 2 && doorRow == cellsPerFloorSide / 2);
+
+        downDoor = new Rectangle(
+            centerX - SquareSize / 2f + doorColumn * SmallGridSize,
+            centerY - SquareSize / 2f + doorRow * SmallGridSize,
+            SmallGridSize,
+            SmallGridSize);
+
         camera = new Camera2D
         {
             Target = playerPosition,
@@ -30,21 +57,12 @@ public sealed class CircleOfSquaresView
             Zoom = 1
         };
 
-        int gridRadius = (int)Math.Ceiling(circleRadius / SquareSize);
         for (int column = -gridRadius; column <= gridRadius; column++)
         {
             for (int row = -gridRadius; row <= gridRadius; row++)
             {
                 float offsetX = column * SquareSize;
                 float offsetY = row * SquareSize;
-                float farthestCornerX = Math.Abs(offsetX) + SquareSize / 2f;
-                float farthestCornerY = Math.Abs(offsetY) + SquareSize / 2f;
-
-                if (farthestCornerX * farthestCornerX + farthestCornerY * farthestCornerY > circleRadius * circleRadius)
-                {
-                    continue;
-                }
-
                 blueSquares.Add(new Rectangle(
                     centerX + offsetX - SquareSize / 2f,
                     centerY + offsetY - SquareSize / 2f,
@@ -56,6 +74,14 @@ public sealed class CircleOfSquaresView
 
     public void UpdateAndDraw(float deltaTime)
     {
+        for (int effect = 0; effect < 9; effect++)
+        {
+            if (Raylib.IsKeyPressed((KeyboardKey)((int)KeyboardKey.One + effect)))
+            {
+                ApplyEffect(effect);
+            }
+        }
+
         Vector2 nextPosition = playerPosition;
         if (Raylib.IsKeyDown(KeyboardKey.Right)) nextPosition.X += Speed * deltaTime;
         if (Raylib.IsKeyDown(KeyboardKey.Left)) nextPosition.X -= Speed * deltaTime;
@@ -64,11 +90,9 @@ public sealed class CircleOfSquaresView
 
         Vector2 fromCenter = nextPosition - new Vector2(centerX, centerY);
         float distanceFromCenter = fromCenter.Length();
-        float maxPlayerDistance = circleRadius - playerRadius;
-        if (distanceFromCenter > maxPlayerDistance)
-        {
-            nextPosition = new Vector2(centerX, centerY) + fromCenter / distanceFromCenter * maxPlayerDistance;
-        }
+        float mapHalfExtent = (gridRadius + 0.5f) * SquareSize - playerRadius;
+        nextPosition.X = Math.Clamp(nextPosition.X, centerX - mapHalfExtent, centerX + mapHalfExtent);
+        nextPosition.Y = Math.Clamp(nextPosition.Y, centerY - mapHalfExtent, centerY + mapHalfExtent);
 
         playerPosition = nextPosition;
         camera.Target.X += (playerPosition.X - camera.Target.X) * 0.1f;
@@ -77,6 +101,9 @@ public sealed class CircleOfSquaresView
         Raylib.BeginDrawing();
         Raylib.ClearBackground(Color.White);
         Raylib.BeginMode2D(camera);
+
+        // The centre tile is the lift/laser shaft, aligned to the tile grid.
+        Raylib.DrawRectangle((int)(centerX - SquareSize / 2f), (int)(centerY - SquareSize / 2f), SquareSize, SquareSize, new Color(35, 22, 22, 250));
 
         float viewLeft = camera.Target.X - camera.Offset.X / camera.Zoom;
         float viewRight = camera.Target.X + camera.Offset.X / camera.Zoom;
@@ -101,19 +128,24 @@ public sealed class CircleOfSquaresView
             Raylib.DrawRectangleLines((int)square.X, (int)square.Y, (int)square.Width, (int)square.Height, Color.Blue);
         }
 
+        float mapEdge = (gridRadius + 0.5f) * SquareSize;
         for (int border = 0; border < BorderThickness; border++)
-        {
-            Raylib.DrawCircleLines(
-                (int)centerX,
-                (int)centerY,
-                (int)circleRadius - BorderThickness / 2 + border,
-                Color.Blue);
-        }
+            Raylib.DrawRectangleLines((int)(centerX - mapEdge + border), (int)(centerY - mapEdge + border),
+                (int)(mapEdge * 2 - border * 2), (int)(mapEdge * 2 - border * 2), Color.Blue);
+
+        // The laser occupies the centre cell of this floor; its beam continues between floors.
+        Raylib.DrawRectangle((int)centerX - 6, (int)(centerY - SquareSize / 2f), 12, SquareSize, new Color(255, 45, 35, 110));
+        Raylib.DrawLine((int)centerX, (int)(centerY - SquareSize / 2f), (int)centerX, (int)(centerY + SquareSize / 2f), Color.Red);
+
+        Raylib.DrawRectangleRec(downDoor, new Color(230, 190, 35, 255));
+        Raylib.DrawRectangleLinesEx(downDoor, 3, Color.DarkBrown);
 
         Raylib.DrawCircleV(playerPosition, playerRadius, new Color(0, 128, 0, 255));
         Raylib.EndMode2D();
 
-        Raylib.DrawText("Arrow keys: move | Esc: menu", 10, 10, 20, Color.DarkGray);
+        Raylib.DrawText("Arrow keys: move | 1-9: apply effect | Esc: menu", 10, 10, 20, Color.DarkGray);
+        Raylib.DrawText($"Stats: {string.Join(" / ", playerStats.Select(value => value.ToString("0.#")))}", 10, 36, 18, Color.DarkGray);
+        Raylib.DrawText($"Active effects: {string.Join(",", activeEffects.Select((active, index) => active ? (index + 1).ToString() : null).Where(value => value is not null))}", 10, 60, 18, Color.DarkGray);
         Raylib.EndDrawing();
     }
 

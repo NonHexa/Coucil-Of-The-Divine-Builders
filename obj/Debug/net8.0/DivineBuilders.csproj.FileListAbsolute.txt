@@ -21,3 +21,8 @@ C:\Users\ethan\GitHub Stuff\Rouge\Coucil-Of-The-Divine-Builders\obj\Debug\net8.0
 C:\Users\ethan\GitHub Stuff\Rouge\Coucil-Of-The-Divine-Builders\obj\Debug\net8.0\DivineBuilders.pdb
 C:\Users\ethan\GitHub Stuff\Rouge\Coucil-Of-The-Divine-Builders\obj\Debug\net8.0\DivineBuilders.genruntimeconfig.cache
 C:\Users\ethan\GitHub Stuff\Rouge\Coucil-Of-The-Divine-Builders\obj\Debug\net8.0\ref\DivineBuilders.dll
+C:\Users\ethan\GitHub Stuff\Rouge\build-check\DivineBuilders.exe
+C:\Users\ethan\GitHub Stuff\Rouge\build-check\DivineBuilders.deps.json
+C:\Users\ethan\GitHub Stuff\Rouge\build-check\DivineBuilders.runtimeconfig.json
+C:\Users\ethan\GitHub Stuff\Rouge\build-check\DivineBuilders.dll
+C:\Users\ethan\GitHub Stuff\Rouge\build-check\DivineBuilders.pdb

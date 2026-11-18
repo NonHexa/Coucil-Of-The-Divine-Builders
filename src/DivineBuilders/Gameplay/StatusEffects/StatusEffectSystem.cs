@@ -6,27 +6,27 @@ public static class StatusEffectSystem
 
     private static readonly double[,] Multipliers =
     {
-        { 0.8, 1, 1, 1, 1, 1, 0.8 },
-        { 0.7, 1, 1, 1, 1, 0.8, 1 },
-        { 1, 1, 1, 0.8, 1, 1, 1 },
-        { 0, 0, 0, 0, 0, 0, 0 },
-        { 1.3, 1, 1, 0.5, 1, 0.5, 0.5 },
-        { 0.5, 1, 1, 1, 1, 0.5, 1.15 },
-        { 0.7, 1, 1, 1, 1, 0.7, 0.8 },
-        { 1, 1, 1, 1, 1, 1, 0.8 },
-        { 0.7, 1, 1, 1, 1, 1, 2 },
-        { 0.5, 1.4, 1.4, 0.6, 0.5, 1, 1.2 },
-        { 0.6, 1.1, 1.1, 0.6, 0.6, 0.8, 0.9 },
-        { 0.9, 1, 1, 1, 1, 0.9, 1 },
-        { 0.8, 1.5, 1.2, 1, 1, 1, 1 },
-        { 1, 1, 1, 0.9, 0.9, 1, 1 },
-        { 1, 1, 1, 1, 1, 1, 0.8 },
-        { 0.8, 1, 1, 1, 1, 0.75, 0.7 },
-        { 0.8, 1, 1, 0.8, 0.8, 0.85, 0.7 },
-        { 1, 1, 1, 1, 1, 1, 0 },
-        { 1, 1, 1, 1, 1, 1, 1 },
-        { 1, 1.2, 1.2, 1, 1, 1, 1 },
-        { 1, 0.5, 0.6, 1, 1, 1, 1 }
+        { 0.8, 1, 1, 1, 1, 1, 0.8 }, //Wet
+        { 0.7, 1, 1, 1, 1, 0.8, 1 }, //shocked
+        { 1, 1, 1, 0.8, 1, 1, 1 },  //burning
+        { 0, 0, 0, 0, 0, 0, 0 },   //paralised
+        { 1.3, 1, 1, 0.5, 1, 0.5, 0.5 },  //slowed
+        { 0.5, 1, 1, 1, 1, 0.5, 1.15 },   //greasy
+        { 0.7, 1, 1, 1, 1, 0.7, 0.8 },  //frozen
+        { 1, 1, 1, 1, 1, 1, 0.8 },   //tarred
+        { 0.7, 1, 1, 1, 1, 1, 2 },   //fast
+        { 0.5, 1.4, 1.4, 0.6, 0.5, 1, 1.2 },   //beserk
+        { 0.6, 1.1, 1.1, 0.6, 0.6, 0.8, 0.9 },  //drunk
+        { 0.9, 1, 1, 1, 1, 0.9, 1 },   //heavy
+        { 0.8, 1.5, 1.2, 1, 1, 1, 1 },   //strong
+        { 1, 1, 1, 0.9, 0.9, 1, 1 },   //passified
+        { 1, 1, 1, 1, 1, 1, 0.8 },   //flying
+        { 0.8, 1, 1, 1, 1, 0.75, 0.7 },   //sticky
+        { 0.8, 1, 1, 0.8, 0.8, 0.85, 0.7 },   //hypnotised
+        { 1, 1, 1, 1, 1, 1, 0 },  //tethered
+        { 1, 1, 1, 1, 1, 1, 1 },  //poisoned
+        { 1, 1.2, 1.2, 1, 1, 1, 1 },   //reinforced will
+        { 1, 0.5, 0.6, 1, 1, 1, 1 }    //weak
     };
 
     private static readonly int[][] Exclusivities =
@@ -40,6 +40,16 @@ public static class StatusEffectSystem
     };
 
     public static int EffectCount => Multipliers.GetLength(0);
+
+    // A copy lets gameplay and UI inspect the table without being able to mutate it.
+    public static double[,] GetMultiplierTable() => (double[,])Multipliers.Clone();
+
+    public static double GetMultiplier(int effectIndex, int statIndex)
+    {
+        if ((uint)effectIndex >= EffectCount) throw new ArgumentOutOfRangeException(nameof(effectIndex));
+        if ((uint)statIndex >= StatCount) throw new ArgumentOutOfRangeException(nameof(statIndex));
+        return Multipliers[effectIndex, statIndex];
+    }
 
     public static void Apply(int effectIndex, double[] stats, bool[] activeEffects)
     {

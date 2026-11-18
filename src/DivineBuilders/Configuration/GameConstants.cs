@@ -4,8 +4,12 @@ namespace DivineBuilders.Configuration;
 
 public static class GameConstants
 {
+    public enum Difficulty { Easy, Medium, Hard }
+
     public const int ScreenWidth = 1280;
     public const int ScreenHeight = 720;
+    public const int FloorSize = 1000;
+    public const int FloorGridCellSize = 40;
     public const string ScreenTitle = "Divenie somethoing";
     public const string BackgroundPath = "";
 
@@ -34,4 +38,20 @@ public static class GameConstants
         55, 51, 47, 43, 40, 36, 33, 30, 28, 25, 23, 21, 19, 17, 16, 14, 13,
         12, 11, 10, 9, 8, 8, 7, 7, 6, 6, 6, 5, 5, 5, 5, 5, 5, 5, 5
     };
+
+    public static int GetFloorRadius(int floorNumber, Difficulty difficulty = Difficulty.Easy)
+    {
+        int[] radii = difficulty switch
+        {
+            Difficulty.Easy => NoEasy,
+            Difficulty.Medium => NoMedium,
+            Difficulty.Hard => NoHard,
+            _ => throw new ArgumentOutOfRangeException(nameof(difficulty))
+        };
+
+        if ((uint)floorNumber >= radii.Length)
+            throw new ArgumentOutOfRangeException(nameof(floorNumber), "No radius is configured for that floor.");
+
+        return radii[floorNumber];
+    }
 }

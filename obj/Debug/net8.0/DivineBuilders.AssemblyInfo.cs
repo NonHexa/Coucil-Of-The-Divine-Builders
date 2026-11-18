@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("DivineBuilders")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+e0150b7500c431bfcd0f02c6edee0e6a0b782ad6")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+151ed877a49ddaf7cfd88cc32232c67251e3d4be")]
 [assembly: System.Reflection.AssemblyProductAttribute("DivineBuilders")]
 [assembly: System.Reflection.AssemblyTitleAttribute("DivineBuilders")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
